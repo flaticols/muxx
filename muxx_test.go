@@ -18,7 +18,30 @@ func testMiddleware(next http.Handler) http.Handler {
 }
 
 func TestGroup_Mount(t *testing.T) {
+	mux := http.NewServeMux()
 
+	// add a test handler
+	mux.HandleFunc("/test", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
+	adminGroup := muxx.Mount(mux, "/admin")
+	adminGroup.Handle("/test", func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
+	// make a request to the test handler
+	recorder := httptest.NewRecorder()
+	request, _ := http.NewRequest(http.MethodGet, "/test", http.NoBody)
+	mux.ServeHTTP(recorder, request)
+	assert.Equal(t, http.StatusOK, recorder.Code)
+
+	t.Run("Mount admin routes", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		request, _ := http.NewRequest(http.MethodGet, "/admin/test", http.NoBody)
+		mux.ServeHTTP(recorder, request)
+		assert.Equal(t, http.StatusOK, recorder.Code)
+	})
 }
 
 func TestGroup_Middleware(t *testing.T) {
