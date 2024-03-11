@@ -1,4 +1,8 @@
 # muxx
+
+> [!IMPORTANT]
+> Use https://github.com/go-pkgz/routegroup, this library is better and does the same thing.
+
 `muxx` added suuport of route groups and middleswares to the standard `http.ServeMux`.
 
 ### Install
